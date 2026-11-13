@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Für Larissa ♥</title>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&family=Lora:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#ffe4ec; --bg2:#ffc2d4; --rose:#e0446a; --rose-dark:#b3264b;
+    --paper:#fffaf3; --ink:#4a2c35; --env:#f4a6b8; --env-dark:#e88aa1;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Lora',Georgia,serif;color:var(--ink);
+    background:radial-gradient(circle at 30% 20%,var(--bg1),var(--bg2));
+    overflow-x:hidden;min-height:100vh;
+  }
+  #hearts{position:fixed;inset:0;pointer-events:none;z-index:0}
+  .heart{position:absolute;bottom:-40px;color:var(--rose);opacity:.6;animation:rise linear forwards}
+  @keyframes rise{to{transform:translateY(-110vh) rotate(25deg);opacity:0}}
+
+  section{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;padding:24px 16px;text-align:center}
+  .hidden{display:none!important}
+  h1{font-family:'Dancing Script',cursive;font-size:clamp(2.6rem,9vw,4.5rem);color:var(--rose-dark)}
+  .sub{margin-top:8px;font-style:italic;opacity:.8}
+
+  /* Envelope */
+  .envelope-wrap{margin-top:40px;cursor:pointer;transition:transform .3s}
+  .envelope-wrap:hover{transform:scale(1.03)}
+  .envelope{position:relative;width:min(320px,85vw);aspect-ratio:3/2;background:var(--env);
+    border-radius:6px;box-shadow:0 15px 35px rgba(179,38,75,.25)}
+  .envelope::before{ /* bottom/side folds */
+    content:"";position:absolute;inset:0;border-radius:6px;
+    background:
+      linear-gradient(to top right,var(--env-dark) 50%,transparent 50%) left/50% 100% no-repeat,
+      linear-gradient(to top left,var(--env-dark) 50%,transparent 50%) right/50% 100% no-repeat;
+    z-index:3}
+  .flap{position:absolute;top:0;left:0;right:0;height:60%;transform-origin:top;
+    clip-path:polygon(0 0,100% 0,50% 100%);background:#f7b6c5;z-index:4;
+    transition:transform .6s ease, z-index 0s .3s}
+  .seal{position:absolute;left:50%;top:60%;transform:translate(-50%,-50%);z-index:5;
+    width:52px;height:52px;border-radius:50%;background:var(--rose);color:#fff;
+    display:grid;place-items:center;font-size:1.5rem;box-shadow:0 3px 8px rgba(0,0,0,.2);transition:opacity .3s}
+  .mini-letter{position:absolute;left:8%;right:8%;top:10%;bottom:8%;background:var(--paper);
+    border-radius:4px;z-index:2;transition:transform .7s ease .5s}
+  .envelope.open .flap{transform:rotateX(180deg);z-index:1}
+  .envelope.open .seal{opacity:0}
+  .envelope.open .mini-letter{transform:translateY(-60%)}
+  .hint{margin-top:22px;font-size:.95rem;animation:pulse 1.6s infinite}
+  @keyframes pulse{50%{opacity:.4}}
+
+  /* Letter */
+  .letter{max-width:640px;width:100%;background:var(--paper);padding:clamp(24px,6vw,56px);
+    border-radius:8px;box-shadow:0 20px 50px rgba(179,38,75,.25);text-align:left;
+    background-image:repeating-linear-gradient(transparent 0 31px,#f1dfe3 31px 32px);
+    line-height:32px;animation:unfold .9s ease both}
+  @keyframes unfold{from{opacity:0;transform:translateY(40px) scale(.95)}}
+  .letter h2{font-family:'Dancing Script',cursive;font-size:2.4rem;color:var(--rose-dark);margin-bottom:16px}
+  .letter p{margin-bottom:32px}
+  .letter .sign{font-family:'Dancing Script',cursive;font-size:1.8rem;text-align:right;color:var(--rose-dark)}
+
+  button{font:inherit;border:0;cursor:pointer;background:var(--rose);color:#fff;
+    padding:12px 26px;border-radius:999px;margin-top:28px;box-shadow:0 6px 16px rgba(224,68,106,.35);
+    transition:transform .2s,background .2s}
+  button:hover{transform:translateY(-2px);background:var(--rose-dark)}
+
+  /* Counter */
+  .counter{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:24px}
+  .box{background:rgba(255,255,255,.7);border-radius:12px;padding:14px 18px;min-width:80px}
+  .box b{display:block;font-size:1.8rem;color:var(--rose-dark)}
+
+  /* Question */
+  .btns{position:relative;display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+  #no{background:#aaa}
+</style>
+</head>
+<body>
+<div id="hearts"></div>
+
+<!-- 1: Start mit Umschlag -->
+<section id="s-start">
+  <h1>Für Larissa</h1>
+  <p class="sub">Du hast Post bekommen …</p>
+  <div class="envelope-wrap" id="envWrap">
+    <div class="envelope" id="env">
+      <div class="mini-letter"></div>
+      <div class="flap"></div>
+      <div class="seal">♥</div>
+    </div>
+  </div>
+  <p class="hint">Tippe auf den Brief</p>
+</section>
+
+<!-- 2: Der Brief -->
+<section id="s-letter" class="hidden">
+  <div class="letter">
+    <h2>Liebe Larissa,</h2>
+    <!-- TEXT HIER EINFÜGEN -->
+    <p>[Hier kommt dein Text hin – Absatz 1]</p>
+    <p>[Absatz 2]</p>
+    <p>[Absatz 3]</p>
+    <p class="sign">Dein [Name] ♥</p>
+  </div>
+  <button onclick="go('s-counter')">Weiter ♥</button>
+</section>
+
+<!-- 3: Zähler -->
+<section id="s-counter" class="hidden">
+  <h1>Unsere Zeit zusammen</h1>
+  <div class="counter">
+    <div class="box"><b id="d">0</b>Tage</div>
+    <div class="box"><b id="h">0</b>Stunden</div>
+    <div class="box"><b id="m">0</b>Minuten</div>
+    <div class="box"><b id="sec">0</b>Sekunden</div>
+  </div>
+  <button onclick="go('s-question')">Eine Frage noch …</button>
+</section>
+
+<!-- 4: Frage -->
+<section id="s-question" class="hidden">
+  <h1>Noch ein Jahr mit mir?</h1>
+  <div class="btns">
+    <button id="yes">Ja! ♥</button>
+    <button id="no">Nein</button>
+  </div>
+</section>
+
+<!-- 5: Ende -->
+<section id="s-end" class="hidden">
+  <h1>Ich liebe dich ♥</h1>
+  <p class="sub">Auf viele weitere Jahre.</p>
+</section>
+
+<script>
+  // >>> Datum eures Jahrestags anpassen (JJJJ-MM-TT) <<<
+  const START = new Date('2025-11-13T00:00:00');
+
+  function go(id){
+    document.querySelectorAll('section').forEach(s=>s.classList.add('hidden'));
+    document.getElementById(id).classList.remove('hidden');
+    window.scrollTo(0,0);
+  }
+
+  document.getElementById('envWrap').addEventListener('click',()=>{
+    const env=document.getElementById('env');
+    if(env.classList.contains('open')) return;
+    env.classList.add('open');
+    burst(25);
+    setTimeout(()=>go('s-letter'),1500);
+  });
+
+  function tick(){
+    let s=Math.max(0,Math.floor((Date.now()-START)/1000));
+    d.textContent=Math.floor(s/86400); s%=86400;
+    h.textContent=Math.floor(s/3600); s%=3600;
+    m.textContent=Math.floor(s/60);
+    sec.textContent=s%60;
+  }
+  tick(); setInterval(tick,1000);
+
+  // "Nein" weicht aus
+  const no=document.getElementById('no');
+  const dodge=()=>{
+    no.style.position='fixed';
+    no.style.left=Math.random()*(innerWidth-100)+'px';
+    no.style.top=Math.random()*(innerHeight-60)+'px';
+  };
+  no.addEventListener('mouseenter',dodge);
+  no.addEventListener('click',e=>{e.preventDefault();dodge();});
+  document.getElementById('yes').addEventListener('click',()=>{
+    no.style.display='none'; burst(60); go('s-end');
+  });
+
+  // Herzen
+  const box=document.getElementById('hearts');
+  function heart(){
+    const el=document.createElement('span');
+    el.className='heart'; el.textContent='♥';
+    el.style.left=Math.random()*100+'vw';
+    el.style.fontSize=(12+Math.random()*24)+'px';
+    el.style.animationDuration=(5+Math.random()*5)+'s';
+    box.appendChild(el);
+    setTimeout(()=>el.remove(),10000);
+  }
+  function burst(n){for(let i=0;i<n;i++)setTimeout(heart,i*40)}
+  setInterval(heart,600);
+</script>
+</body>
+</html>
