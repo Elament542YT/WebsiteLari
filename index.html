@@ -113,11 +113,32 @@
   .btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;align-items:center}
   #no{background:#555;box-shadow:none;transition:all .25s}
   #yes{transition:transform .3s}
+
+  /* Musik + Fortschritt */
+  #music{position:fixed;top:14px;right:14px;z-index:70;margin:0;padding:10px 14px;font-size:1.1rem}
+  #dots{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:70}
+  #dots i{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.25);transition:all .4s}
+  #dots i.on{background:var(--rose);box-shadow:0 0 10px var(--rose);width:22px;border-radius:4px}
+  /* Spiel */
+  #game{position:relative;width:min(420px,92vw);height:60vh;margin-top:20px;border-radius:18px;overflow:hidden;
+    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);touch-action:none}
+  #basket{position:absolute;bottom:10px;font-size:2.6rem;transform:translateX(-50%);user-select:none}
+  .fall{position:absolute;top:-40px;font-size:1.8rem;user-select:none}
+  #score{font-size:1.3rem;color:var(--gold);margin-top:10px}
+  /* Rubbellos */
+  .scratch{position:relative;width:min(340px,88vw);aspect-ratio:3/2;margin-top:24px;border-radius:16px;overflow:hidden;
+    background:var(--paper);color:var(--ink);display:grid;place-items:center;padding:20px;box-shadow:0 0 50px rgba(255,213,138,.4)}
+  .scratch h3{font-family:'Dancing Script';font-size:2rem;color:var(--rose-dark)}
+  .scratch canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair}
+  /* Polaroid-Tilt */
+  .letter{transition:transform .2s}
 </style>
 </head>
 <body>
 <canvas id="sky"></canvas>
 <canvas id="fx"></canvas>
+<button id="music" title="Musik">♪</button>
+<div id="dots"></div>
 
 <!-- 0: Intro -->
 <section id="s-intro">
@@ -165,7 +186,15 @@
   <h1>Warum ich dich liebe</h1>
   <p class="sub">Dreh die Karten um</p>
   <div class="cards" id="cards"></div>
-  <button onclick="go('s-counter')">Weiter →</button>
+  <button onclick="go('s-game')">Weiter →</button>
+</section>
+
+<!-- Spiel -->
+<section id="s-game" class="hidden">
+  <h1>Fang meine Herzen</h1>
+  <p class="sub">Sammle 15 Herzen – aber Vorsicht vor den 💔</p>
+  <div id="game"><div id="basket">🧺</div></div>
+  <div id="score">0 / 15</div>
 </section>
 
 <!-- 5: Zähler -->
@@ -188,6 +217,14 @@
     <button id="yes">Ja! ♥</button>
     <button id="no">Nein</button>
   </div>
+</section>
+
+<!-- Rubbellos -->
+<section id="s-gift" class="hidden">
+  <h1>Ein kleines Geschenk</h1>
+  <p class="sub">Rubbel mit dem Finger frei</p>
+  <div class="scratch"><div><h3>[Dein Geschenk]</h3><p>[z. B. Gutschein für ein Wochenende zu zweit]</p></div><canvas id="scr"></canvas></div>
+  <button id="giftNext" class="hidden" onclick="go('s-end')">Weiter ♥</button>
 </section>
 
 <!-- 7: Finale -->
@@ -214,6 +251,10 @@ function go(id){
   const s=$(id); s.classList.remove('hidden'); s.classList.remove('enter'); void s.offsetWidth; s.classList.add('enter');
   scrollTo(0,0);
   if(id==='s-memories') revealMems();
+  if(id==='s-game') startGame();
+  if(id==='s-end'){fireworks();heartShape()}
+  const ids=[...document.querySelectorAll('section')].map(x=>x.id);
+  document.querySelectorAll('#dots i').forEach((d,i)=>d.classList.toggle('on',i===ids.indexOf(id)));
 }
 
 /* Tipp-Effekt */
@@ -238,7 +279,7 @@ async function writeLetter(){
   const s=document.createElement('p');s.className='sign';body.appendChild(s);await type(s,SIGN,60);
   $('letterNext').classList.remove('hidden');
 }
-// Antippen überspringt den Tipp-Effekt nicht – absichtlich romantisch langsam ;)
+
 
 function revealMems(){
   const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('show');io.unobserve(e.target)}}),{threshold:.2});
@@ -264,7 +305,7 @@ function dodge(e){e&&e.preventDefault();tries++;
   no.style.position='fixed';no.style.left=Math.random()*(innerWidth-160)+'px';no.style.top=Math.random()*(innerHeight-70)+'px';
   no.textContent=noTexts[Math.min(tries,noTexts.length-1)];yes.style.transform=`scale(${1+tries*.15})`;}
 no.addEventListener('mouseenter',dodge);no.addEventListener('click',dodge);no.addEventListener('touchstart',dodge);
-yes.onclick=()=>{no.style.display='none';go('s-end');fireworks()};
+yes.onclick=()=>{no.style.display='none';explode(innerWidth/2,innerHeight/2,150);go('s-gift');initScratch()};
 
 /* Herz-Spur hinter Maus/Finger */
 let last=0;
@@ -272,6 +313,63 @@ addEventListener('pointermove',e=>{const n=Date.now();if(n-last<60)return;last=n
   const h=document.createElement('span');h.className='trail';h.textContent='♥';
   h.style.left=e.clientX+'px';h.style.top=e.clientY+'px';h.style.fontSize=(10+Math.random()*12)+'px';
   document.body.appendChild(h);setTimeout(()=>h.remove(),1000);});
+
+/* Fortschritt */
+document.querySelectorAll('section').forEach(()=>$('dots').appendChild(document.createElement('i')));
+$('dots').firstChild.classList.add('on');
+
+/* Spieluhr-Musik (selbst erzeugt) */
+let ac,playing=false,mTimer;
+const MEL=[[72,1],[76,1],[79,1],[84,2],[83,1],[79,1],[76,2],[77,1],[81,1],[84,1],[86,2],[84,1],[79,1],[76,2],
+           [74,1],[77,1],[81,1],[83,2],[79,1],[76,1],[72,2],[71,1],[74,1],[79,1],[72,3]];
+function note(m,t,d){const o=ac.createOscillator(),g=ac.createGain(),f=440*2**((m-69)/12);
+  o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.18,t+.01);
+  g.gain.exponentialRampToValueAtTime(.001,t+d*1.8);o.connect(g).connect(ac.destination);o.start(t);o.stop(t+d*2)}
+function loop(){let t=ac.currentTime+.05;const b=.32;
+  for(const [m,d] of MEL){note(m,t,b*d);note(m-24,t,b*d);t+=b*d}
+  mTimer=setTimeout(loop,(t-ac.currentTime)*1000)}
+function toggleMusic(on){ac=ac||new (window.AudioContext||window.webkitAudioContext)();
+  playing=on??!playing;$('music').textContent=playing?'♪':'🔇';
+  if(playing){ac.resume();loop()}else{clearTimeout(mTimer);ac.suspend()}}
+$('music').onclick=e=>{e.stopPropagation();toggleMusic()};
+$('bigheart').addEventListener('click',()=>{if(!playing)toggleMusic(true)});
+
+/* Brief kippt leicht mit der Maus */
+addEventListener('pointermove',e=>{const l=document.querySelector('.letter');if(!l||l.offsetParent===null)return;
+  const x=(e.clientX/innerWidth-.5)*6,y=(e.clientY/innerHeight-.5)*-6;l.style.transform=`perspective(1000px) rotateY(${x}deg) rotateX(${y}deg)`});
+
+/* Spiel */
+let gameOn=false;
+function startGame(){if(gameOn)return;gameOn=true;const g=$('game'),b=$('basket');let score=0,bx=.5;
+  const mv=e=>{const r=g.getBoundingClientRect();bx=Math.min(.95,Math.max(.05,(e.clientX-r.left)/r.width));b.style.left=bx*100+'%'};
+  g.addEventListener('pointermove',mv);g.addEventListener('pointerdown',mv);b.style.left='50%';
+  const spawn=setInterval(()=>{const h=document.createElement('div');h.className='fall';
+    const bad=Math.random()<.2;h.textContent=bad?'💔':['❤️','💖','💕','💗'][Math.floor(Math.random()*4)];
+    h.style.left=Math.random()*90+'%';g.appendChild(h);let y=-40;const v=2+Math.random()*2.5;
+    (function f(){y+=v;h.style.top=y+'px';const hr=h.getBoundingClientRect(),br=b.getBoundingClientRect();
+      if(hr.bottom>br.top+10&&hr.right>br.left&&hr.left<br.right){h.remove();
+        score=Math.max(0,score+(bad?-2:1));$('score').textContent=score+' / 15';
+        explode(hr.left+15,hr.top,bad?5:12);
+        if(score>=15){clearInterval(spawn);$('score').textContent='Geschafft! Du hast mein Herz sowieso schon ♥';
+          setTimeout(()=>go('s-counter'),2200)}return}
+      if(y>g.clientHeight){h.remove();return}requestAnimationFrame(f)})()},650)}
+
+/* Rubbellos */
+function initScratch(){const c=$('scr'),x=c.getContext('2d'),r=c.getBoundingClientRect();
+  c.width=r.width;c.height=r.height;const gr=x.createLinearGradient(0,0,r.width,r.height);
+  gr.addColorStop(0,'#d4af37');gr.addColorStop(.5,'#fff1c1');gr.addColorStop(1,'#b8892b');x.fillStyle=gr;x.fillRect(0,0,r.width,r.height);
+  x.fillStyle='#7a5a12';x.font='bold 22px Lora';x.textAlign='center';x.fillText('♥ Rubbel mich ♥',r.width/2,r.height/2+8);
+  x.globalCompositeOperation='destination-out';let down=false,done=false;
+  const sc=e=>{if(!down)return;const b=c.getBoundingClientRect();x.beginPath();x.arc(e.clientX-b.left,e.clientY-b.top,22,0,7);x.fill();
+    if(!done&&Math.random()<.15){const d=x.getImageData(0,0,c.width,c.height).data;let cl=0;for(let i=3;i<d.length;i+=40)if(d[i]===0)cl++;
+      if(cl/(d.length/40)>.5){done=true;c.style.transition='opacity .8s';c.style.opacity=0;explode(b.left+b.width/2,b.top+b.height/2,100);
+        $('giftNext').classList.remove('hidden')}}};
+  c.onpointerdown=e=>{down=true;sc(e)};addEventListener('pointerup',()=>down=false);c.onpointermove=sc}
+
+/* Finale: Herz aus Partikeln */
+function heartShape(){const cx=innerWidth/2,cy=innerHeight/2-20,k=Math.min(innerWidth,innerHeight)/40;
+  for(let i=0;i<220;i++){const t=i/220*Math.PI*2,tx=cx+16*Math.sin(t)**3*k,ty=cy-(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t))*k;
+    parts.push({x:cx,y:cy,vx:(tx-cx)/60,vy:(ty-cy)/60,life:1.6,c:cols[i%cols.length],s:10,h:true,still:60})}}
 
 /* Sternenhimmel */
 const sky=$('sky'),sc=sky.getContext('2d');let stars=[],shoot=null;
@@ -295,7 +393,7 @@ function explode(x,y,n,heart=true){for(let i=0;i<n;i++){const a=Math.random()*Ma
 function fireworks(){let k=0;const iv=setInterval(()=>{explode(Math.random()*innerWidth,Math.random()*innerHeight*.6,70,Math.random()<.5);
   if(++k>25)clearInterval(iv)},350)}
 function drawFx(){fc.clearRect(0,0,innerWidth,innerHeight);
-  parts=parts.filter(p=>p.life>0);for(const p of parts){p.x+=p.vx;p.y+=p.vy;p.vy+=.08;p.vx*=.98;p.life-=.012;
+  parts=parts.filter(p=>p.life>0);for(const p of parts){if(p.still!==undefined){if(p.still-->0){p.x+=p.vx;p.y+=p.vy}p.life-=.004}else{p.x+=p.vx;p.y+=p.vy;p.vy+=.08;p.vx*=.98;p.life-=.012}
     fc.globalAlpha=Math.max(p.life,0);fc.fillStyle=p.c;
     if(p.h){fc.font=p.s+'px serif';fc.fillText('♥',p.x,p.y)}else{fc.beginPath();fc.arc(p.x,p.y,2.2,0,7);fc.fill()}}
   requestAnimationFrame(drawFx)}
