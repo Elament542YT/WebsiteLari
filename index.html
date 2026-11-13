@@ -3,123 +3,185 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Für Larissa ♥</title>
+<title>Für Larissa</title>
 <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&family=Lora:ital@0;1&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg1:#ffe4ec; --bg2:#ffc2d4; --rose:#e0446a; --rose-dark:#b3264b;
-    --paper:#fffaf3; --ink:#4a2c35; --env:#f4a6b8; --env-dark:#e88aa1;
+    --night1:#0b0620; --night2:#2a0f3d; --rose:#ff4d7e; --rose-dark:#c2185b; --gold:#ffd58a;
+    --paper:#fffaf3; --ink:#4a2c35; --env:#f4a6b8; --env-dark:#e88aa1; --text:#fff;
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  html,body{height:100%}
   body{
-    font-family:'Lora',Georgia,serif;color:var(--ink);
-    background:radial-gradient(circle at 30% 20%,var(--bg1),var(--bg2));
-    overflow-x:hidden;min-height:100vh;
+    font-family:'Lora',Georgia,serif;color:var(--text);min-height:100vh;overflow-x:hidden;
+    background:radial-gradient(ellipse at bottom,var(--night2),var(--night1) 70%) fixed;
   }
-  #hearts{position:fixed;inset:0;pointer-events:none;z-index:0}
-  .heart{position:absolute;bottom:-40px;color:var(--rose);opacity:.6;animation:rise linear forwards}
-  @keyframes rise{to{transform:translateY(-110vh) rotate(25deg);opacity:0}}
+  canvas#sky{position:fixed;inset:0;z-index:0;pointer-events:none}
+  #fx{position:fixed;inset:0;z-index:50;pointer-events:none}
+  .trail{position:fixed;pointer-events:none;color:var(--rose);z-index:60;animation:fade 1s forwards}
+  @keyframes fade{to{opacity:0;transform:translateY(-30px) scale(.4)}}
 
   section{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;
-    align-items:center;justify-content:center;padding:24px 16px;text-align:center}
+    align-items:center;justify-content:center;padding:40px 16px;text-align:center}
   .hidden{display:none!important}
-  h1{font-family:'Dancing Script',cursive;font-size:clamp(2.6rem,9vw,4.5rem);color:var(--rose-dark)}
-  .sub{margin-top:8px;font-style:italic;opacity:.8}
+  .enter{animation:enter 1s ease both}
+  @keyframes enter{from{opacity:0;transform:translateY(30px);filter:blur(8px)}}
+  h1{font-family:'Dancing Script',cursive;font-size:clamp(2.8rem,10vw,5.5rem);
+    background:linear-gradient(90deg,#ff9ab8,var(--gold),#ff9ab8);background-size:200%;
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    animation:shine 4s linear infinite;filter:drop-shadow(0 0 18px rgba(255,77,126,.5))}
+  @keyframes shine{to{background-position:200%}}
+  .sub{margin-top:10px;font-style:italic;opacity:.85;min-height:1.6em}
 
-  /* Envelope */
-  .envelope-wrap{margin-top:40px;cursor:pointer;transition:transform .3s}
-  .envelope-wrap:hover{transform:scale(1.03)}
-  .envelope{position:relative;width:min(320px,85vw);aspect-ratio:3/2;background:var(--env);
-    border-radius:6px;box-shadow:0 15px 35px rgba(179,38,75,.25)}
-  .envelope::before{ /* bottom/side folds */
-    content:"";position:absolute;inset:0;border-radius:6px;
-    background:
-      linear-gradient(to top right,var(--env-dark) 50%,transparent 50%) left/50% 100% no-repeat,
-      linear-gradient(to top left,var(--env-dark) 50%,transparent 50%) right/50% 100% no-repeat;
-    z-index:3}
+  button{font:inherit;border:0;cursor:pointer;color:#fff;padding:14px 30px;border-radius:999px;margin-top:30px;
+    background:linear-gradient(135deg,var(--rose),var(--rose-dark));
+    box-shadow:0 0 25px rgba(255,77,126,.55);transition:transform .2s}
+  button:hover{transform:translateY(-3px) scale(1.04)}
+
+  /* Intro-Herz */
+  .bigheart{font-size:clamp(5rem,22vw,9rem);color:var(--rose);cursor:pointer;
+    animation:beat 1.1s infinite;filter:drop-shadow(0 0 30px var(--rose));user-select:none}
+  @keyframes beat{0%,100%{transform:scale(1)}15%{transform:scale(1.18)}30%{transform:scale(1)}45%{transform:scale(1.12)}}
+
+  /* Umschlag */
+  .envelope-wrap{margin-top:40px;cursor:pointer;perspective:900px;animation:float 3s ease-in-out infinite}
+  @keyframes float{50%{transform:translateY(-12px) rotate(-1deg)}}
+  .envelope{position:relative;width:min(330px,85vw);aspect-ratio:3/2;background:var(--env);
+    border-radius:6px;box-shadow:0 0 60px rgba(255,77,126,.45)}
+  .envelope::before{content:"";position:absolute;inset:0;border-radius:6px;z-index:3;
+    background:linear-gradient(to top right,var(--env-dark) 50%,transparent 50%) left/50% 100% no-repeat,
+               linear-gradient(to top left,var(--env-dark) 50%,transparent 50%) right/50% 100% no-repeat}
   .flap{position:absolute;top:0;left:0;right:0;height:60%;transform-origin:top;
-    clip-path:polygon(0 0,100% 0,50% 100%);background:#f7b6c5;z-index:4;
-    transition:transform .6s ease, z-index 0s .3s}
-  .seal{position:absolute;left:50%;top:60%;transform:translate(-50%,-50%);z-index:5;
-    width:52px;height:52px;border-radius:50%;background:var(--rose);color:#fff;
-    display:grid;place-items:center;font-size:1.5rem;box-shadow:0 3px 8px rgba(0,0,0,.2);transition:opacity .3s}
-  .mini-letter{position:absolute;left:8%;right:8%;top:10%;bottom:8%;background:var(--paper);
-    border-radius:4px;z-index:2;transition:transform .7s ease .5s}
+    clip-path:polygon(0 0,100% 0,50% 100%);background:#f7b6c5;z-index:4;transition:transform .7s ease,z-index 0s .35s}
+  .seal{position:absolute;left:50%;top:60%;transform:translate(-50%,-50%);z-index:5;width:56px;height:56px;
+    border-radius:50%;background:var(--rose-dark);color:#fff;display:grid;place-items:center;font-size:1.6rem;
+    box-shadow:0 0 15px var(--rose);transition:transform .4s,opacity .4s}
+  .mini-letter{position:absolute;left:8%;right:8%;top:10%;bottom:8%;background:var(--paper);border-radius:4px;
+    z-index:2;transition:transform .8s ease .5s;color:var(--rose-dark);font-family:'Dancing Script';font-size:1.4rem;
+    display:flex;justify-content:center;padding-top:8px}
   .envelope.open .flap{transform:rotateX(180deg);z-index:1}
-  .envelope.open .seal{opacity:0}
-  .envelope.open .mini-letter{transform:translateY(-60%)}
-  .hint{margin-top:22px;font-size:.95rem;animation:pulse 1.6s infinite}
-  @keyframes pulse{50%{opacity:.4}}
+  .envelope.open .seal{transform:translate(-50%,-50%) scale(2);opacity:0}
+  .envelope.open .mini-letter{transform:translateY(-70%)}
+  .hint{margin-top:24px;font-size:.95rem;animation:pulse 1.6s infinite}
+  @keyframes pulse{50%{opacity:.35}}
 
-  /* Letter */
-  .letter{max-width:640px;width:100%;background:var(--paper);padding:clamp(24px,6vw,56px);
-    border-radius:8px;box-shadow:0 20px 50px rgba(179,38,75,.25);text-align:left;
+  /* Brief */
+  .letter{max-width:660px;width:100%;color:var(--ink);background:var(--paper);padding:clamp(24px,6vw,56px);
+    border-radius:8px;text-align:left;line-height:32px;box-shadow:0 0 80px rgba(255,77,126,.35);
     background-image:repeating-linear-gradient(transparent 0 31px,#f1dfe3 31px 32px);
-    line-height:32px;animation:unfold .9s ease both}
-  @keyframes unfold{from{opacity:0;transform:translateY(40px) scale(.95)}}
-  .letter h2{font-family:'Dancing Script',cursive;font-size:2.4rem;color:var(--rose-dark);margin-bottom:16px}
-  .letter p{margin-bottom:32px}
-  .letter .sign{font-family:'Dancing Script',cursive;font-size:1.8rem;text-align:right;color:var(--rose-dark)}
+    animation:unfold 1s cubic-bezier(.2,.8,.2,1) both;transform-origin:top}
+  @keyframes unfold{from{opacity:0;transform:rotateX(-80deg)}}
+  .letter h2{font-family:'Dancing Script';font-size:2.5rem;color:var(--rose-dark);margin-bottom:16px}
+  .letter p{margin-bottom:32px;white-space:pre-wrap}
+  .letter .sign{font-family:'Dancing Script';font-size:1.9rem;text-align:right;color:var(--rose-dark)}
+  .caret::after{content:"|";animation:pulse .8s infinite;color:var(--rose)}
 
-  button{font:inherit;border:0;cursor:pointer;background:var(--rose);color:#fff;
-    padding:12px 26px;border-radius:999px;margin-top:28px;box-shadow:0 6px 16px rgba(224,68,106,.35);
-    transition:transform .2s,background .2s}
-  button:hover{transform:translateY(-2px);background:var(--rose-dark)}
+  /* Erinnerungen */
+  .timeline{max-width:700px;width:100%;margin-top:30px;position:relative}
+  .timeline::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:2px;
+    background:linear-gradient(var(--rose),var(--gold));transform:translateX(-50%)}
+  .mem{position:relative;width:calc(50% - 30px);margin-bottom:34px;padding:18px;border-radius:14px;text-align:left;
+    background:rgba(255,255,255,.08);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.15);
+    opacity:0;transform:translateY(40px);transition:all .8s ease}
+  .mem.show{opacity:1;transform:none}
+  .mem:nth-child(odd){margin-right:auto}.mem:nth-child(even){margin-left:auto}
+  .mem::after{content:"♥";position:absolute;top:18px;color:var(--rose);font-size:1.3rem}
+  .mem:nth-child(odd)::after{right:-42px}.mem:nth-child(even)::after{left:-42px}
+  .mem small{color:var(--gold)} .mem h3{font-family:'Dancing Script';font-size:1.7rem;margin:4px 0}
+  .photo{margin-top:10px;aspect-ratio:4/3;border-radius:8px;background:rgba(255,255,255,.1);
+    display:grid;place-items:center;font-size:.85rem;opacity:.7;background-size:cover;background-position:center}
+  @media(max-width:600px){
+    .timeline::before{left:14px}
+    .mem{width:calc(100% - 40px);margin-left:40px!important}
+    .mem::after{left:-35px!important;right:auto!important}
+  }
 
-  /* Counter */
-  .counter{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:24px}
-  .box{background:rgba(255,255,255,.7);border-radius:12px;padding:14px 18px;min-width:80px}
-  .box b{display:block;font-size:1.8rem;color:var(--rose-dark)}
+  /* Zähler */
+  .counter{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:30px}
+  .box{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:16px;
+    padding:18px 20px;min-width:96px;backdrop-filter:blur(8px)}
+  .box b{display:block;font-size:2.2rem;color:var(--gold);text-shadow:0 0 12px rgba(255,213,138,.6)}
 
-  /* Question */
-  .btns{position:relative;display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
-  #no{background:#aaa}
+  /* Gründe */
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;max-width:700px;width:100%;margin-top:30px}
+  .card{perspective:600px;height:150px;cursor:pointer}
+  .card-in{position:relative;width:100%;height:100%;transition:transform .7s;transform-style:preserve-3d}
+  .card.flip .card-in{transform:rotateY(180deg)}
+  .card-f,.card-b{position:absolute;inset:0;border-radius:14px;display:grid;place-items:center;padding:12px;backface-visibility:hidden}
+  .card-f{background:linear-gradient(135deg,var(--rose),var(--rose-dark));font-size:2.4rem}
+  .card-b{background:var(--paper);color:var(--ink);transform:rotateY(180deg);font-size:.95rem}
+
+  .btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;align-items:center}
+  #no{background:#555;box-shadow:none;transition:all .25s}
+  #yes{transition:transform .3s}
 </style>
 </head>
 <body>
-<div id="hearts"></div>
+<canvas id="sky"></canvas>
+<canvas id="fx"></canvas>
 
-<!-- 1: Start mit Umschlag -->
-<section id="s-start">
+<!-- 0: Intro -->
+<section id="s-intro">
+  <div class="bigheart" id="bigheart">♥</div>
+  <p class="sub" id="introText"></p>
+</section>
+
+<!-- 1: Umschlag -->
+<section id="s-start" class="hidden">
   <h1>Für Larissa</h1>
   <p class="sub">Du hast Post bekommen …</p>
   <div class="envelope-wrap" id="envWrap">
     <div class="envelope" id="env">
-      <div class="mini-letter"></div>
+      <div class="mini-letter">♥ 1 Jahr ♥</div>
       <div class="flap"></div>
-      <div class="seal">♥</div>
+      <div class="seal">L</div>
     </div>
   </div>
   <p class="hint">Tippe auf den Brief</p>
 </section>
 
-<!-- 2: Der Brief -->
+<!-- 2: Brief -->
 <section id="s-letter" class="hidden">
   <div class="letter">
     <h2>Liebe Larissa,</h2>
-    <!-- TEXT HIER EINFÜGEN -->
-    <p>[Hier kommt dein Text hin – Absatz 1]</p>
-    <p>[Absatz 2]</p>
-    <p>[Absatz 3]</p>
-    <p class="sign">Dein [Name] ♥</p>
+    <div id="letterBody"></div>
   </div>
-  <button onclick="go('s-counter')">Weiter ♥</button>
+  <button id="letterNext" class="hidden" onclick="go('s-memories')">Unsere Geschichte →</button>
 </section>
 
-<!-- 3: Zähler -->
-<section id="s-counter" class="hidden">
-  <h1>Unsere Zeit zusammen</h1>
-  <div class="counter">
-    <div class="box"><b id="d">0</b>Tage</div>
-    <div class="box"><b id="h">0</b>Stunden</div>
-    <div class="box"><b id="m">0</b>Minuten</div>
-    <div class="box"><b id="sec">0</b>Sekunden</div>
+<!-- 3: Erinnerungen -->
+<section id="s-memories" class="hidden">
+  <h1>Unser Jahr</h1>
+  <div class="timeline">
+    <div class="mem"><small>[Datum]</small><h3>Das erste Treffen</h3><p>[Text]</p><div class="photo">Foto hier</div></div>
+    <div class="mem"><small>[Datum]</small><h3>Unser erstes Date</h3><p>[Text]</p><div class="photo">Foto hier</div></div>
+    <div class="mem"><small>[Datum]</small><h3>Der erste Urlaub</h3><p>[Text]</p><div class="photo">Foto hier</div></div>
+    <div class="mem"><small>[Datum]</small><h3>Heute</h3><p>Ein Jahr – und ich würde alles wieder genauso machen.</p></div>
   </div>
+  <button onclick="go('s-reasons')">Weiter →</button>
+</section>
+
+<!-- 4: Gründe -->
+<section id="s-reasons" class="hidden">
+  <h1>Warum ich dich liebe</h1>
+  <p class="sub">Dreh die Karten um</p>
+  <div class="cards" id="cards"></div>
+  <button onclick="go('s-counter')">Weiter →</button>
+</section>
+
+<!-- 5: Zähler -->
+<section id="s-counter" class="hidden">
+  <h1>Unsere Zeit</h1>
+  <div class="counter">
+    <div class="box"><b id="cd">0</b>Tage</div>
+    <div class="box"><b id="ch">0</b>Stunden</div>
+    <div class="box"><b id="cm">0</b>Minuten</div>
+    <div class="box"><b id="cs">0</b>Sekunden</div>
+  </div>
+  <p class="sub">… und jede einzelne davon war es wert.</p>
   <button onclick="go('s-question')">Eine Frage noch …</button>
 </section>
 
-<!-- 4: Frage -->
+<!-- 6: Frage -->
 <section id="s-question" class="hidden">
   <h1>Noch ein Jahr mit mir?</h1>
   <div class="btns">
@@ -128,65 +190,116 @@
   </div>
 </section>
 
-<!-- 5: Ende -->
+<!-- 7: Finale -->
 <section id="s-end" class="hidden">
-  <h1>Ich liebe dich ♥</h1>
-  <p class="sub">Auf viele weitere Jahre.</p>
+  <h1>Ich liebe dich</h1>
+  <p class="sub">Auf alle Jahre, die noch kommen. ♥</p>
 </section>
 
 <script>
-  // >>> Datum eures Jahrestags anpassen (JJJJ-MM-TT) <<<
-  const START = new Date('2025-11-13T00:00:00');
+/* ======= HIER ANPASSEN ======= */
+const START = new Date('2025-11-13T00:00:00'); // Datum eures Jahrestags
+const LETTER = [
+  "[Hier kommt dein Text hin – Absatz 1]",
+  "[Absatz 2]",
+  "[Absatz 3]"
+];
+const SIGN = "Dein [Name] ♥";
+const REASONS = ["[Grund 1]","[Grund 2]","[Grund 3]","[Grund 4]","[Grund 5]","[Grund 6]"];
+/* ============================= */
 
-  function go(id){
-    document.querySelectorAll('section').forEach(s=>s.classList.add('hidden'));
-    document.getElementById(id).classList.remove('hidden');
-    window.scrollTo(0,0);
-  }
+const $=id=>document.getElementById(id);
+function go(id){
+  document.querySelectorAll('section').forEach(s=>s.classList.add('hidden'));
+  const s=$(id); s.classList.remove('hidden'); s.classList.remove('enter'); void s.offsetWidth; s.classList.add('enter');
+  scrollTo(0,0);
+  if(id==='s-memories') revealMems();
+}
 
-  document.getElementById('envWrap').addEventListener('click',()=>{
-    const env=document.getElementById('env');
-    if(env.classList.contains('open')) return;
-    env.classList.add('open');
-    burst(25);
-    setTimeout(()=>go('s-letter'),1500);
-  });
+/* Tipp-Effekt */
+function type(el,text,speed=45){
+  return new Promise(r=>{let i=0;el.classList.add('caret');
+    (function t(){el.textContent=text.slice(0,++i);i<text.length?setTimeout(t,speed):(el.classList.remove('caret'),r())})()});
+}
+type($('introText'),'Tippe auf das Herz …',70);
 
-  function tick(){
-    let s=Math.max(0,Math.floor((Date.now()-START)/1000));
-    d.textContent=Math.floor(s/86400); s%=86400;
-    h.textContent=Math.floor(s/3600); s%=3600;
-    m.textContent=Math.floor(s/60);
-    sec.textContent=s%60;
-  }
-  tick(); setInterval(tick,1000);
+$('bigheart').onclick=e=>{explode(e.clientX,e.clientY,80);setTimeout(()=>go('s-start'),500)};
 
-  // "Nein" weicht aus
-  const no=document.getElementById('no');
-  const dodge=()=>{
-    no.style.position='fixed';
-    no.style.left=Math.random()*(innerWidth-100)+'px';
-    no.style.top=Math.random()*(innerHeight-60)+'px';
-  };
-  no.addEventListener('mouseenter',dodge);
-  no.addEventListener('click',e=>{e.preventDefault();dodge();});
-  document.getElementById('yes').addEventListener('click',()=>{
-    no.style.display='none'; burst(60); go('s-end');
-  });
+$('envWrap').onclick=async()=>{
+  const env=$('env'); if(env.classList.contains('open'))return;
+  env.classList.add('open');
+  const r=env.getBoundingClientRect(); explode(r.left+r.width/2,r.top+r.height/2,120);
+  setTimeout(writeLetter,1600);
+};
+async function writeLetter(){
+  go('s-letter'); const body=$('letterBody'); body.innerHTML='';
+  await new Promise(r=>setTimeout(r,900));
+  for(const p of LETTER){const el=document.createElement('p');body.appendChild(el);await type(el,p,28);}
+  const s=document.createElement('p');s.className='sign';body.appendChild(s);await type(s,SIGN,60);
+  $('letterNext').classList.remove('hidden');
+}
+// Antippen überspringt den Tipp-Effekt nicht – absichtlich romantisch langsam ;)
 
-  // Herzen
-  const box=document.getElementById('hearts');
-  function heart(){
-    const el=document.createElement('span');
-    el.className='heart'; el.textContent='♥';
-    el.style.left=Math.random()*100+'vw';
-    el.style.fontSize=(12+Math.random()*24)+'px';
-    el.style.animationDuration=(5+Math.random()*5)+'s';
-    box.appendChild(el);
-    setTimeout(()=>el.remove(),10000);
-  }
-  function burst(n){for(let i=0;i<n;i++)setTimeout(heart,i*40)}
-  setInterval(heart,600);
+function revealMems(){
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('show');io.unobserve(e.target)}}),{threshold:.2});
+  document.querySelectorAll('.mem').forEach(m=>io.observe(m));
+}
+
+REASONS.forEach(t=>{
+  const c=document.createElement('div');c.className='card';
+  c.innerHTML=`<div class="card-in"><div class="card-f">♥</div><div class="card-b">${t}</div></div>`;
+  c.onclick=e=>{c.classList.toggle('flip');explode(e.clientX,e.clientY,15)};
+  $('cards').appendChild(c);
+});
+
+function tick(){let s=Math.max(0,Math.floor((Date.now()-START)/1000));
+  cd.textContent=Math.floor(s/86400);s%=86400;ch.textContent=Math.floor(s/3600);s%=3600;
+  cm.textContent=Math.floor(s/60);cs.textContent=s%60;}
+tick();setInterval(tick,1000);
+
+/* Nein-Knopf flieht, Ja wächst */
+const no=$('no'),yes=$('yes');let tries=0;
+const noTexts=["Nein","Sicher?","Wirklich?","Überleg nochmal!","Keine Chance 😏","Klick auf Ja!"];
+function dodge(e){e&&e.preventDefault();tries++;
+  no.style.position='fixed';no.style.left=Math.random()*(innerWidth-160)+'px';no.style.top=Math.random()*(innerHeight-70)+'px';
+  no.textContent=noTexts[Math.min(tries,noTexts.length-1)];yes.style.transform=`scale(${1+tries*.15})`;}
+no.addEventListener('mouseenter',dodge);no.addEventListener('click',dodge);no.addEventListener('touchstart',dodge);
+yes.onclick=()=>{no.style.display='none';go('s-end');fireworks()};
+
+/* Herz-Spur hinter Maus/Finger */
+let last=0;
+addEventListener('pointermove',e=>{const n=Date.now();if(n-last<60)return;last=n;
+  const h=document.createElement('span');h.className='trail';h.textContent='♥';
+  h.style.left=e.clientX+'px';h.style.top=e.clientY+'px';h.style.fontSize=(10+Math.random()*12)+'px';
+  document.body.appendChild(h);setTimeout(()=>h.remove(),1000);});
+
+/* Sternenhimmel */
+const sky=$('sky'),sc=sky.getContext('2d');let stars=[],shoot=null;
+function size(){[sky,fx].forEach(c=>{c.width=innerWidth*devicePixelRatio;c.height=innerHeight*devicePixelRatio;
+  c.style.width=innerWidth+'px';c.style.height=innerHeight+'px';c.getContext('2d').setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0)});
+  stars=Array.from({length:Math.floor(innerWidth*innerHeight/3500)},()=>({x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*1.4+.2,p:Math.random()*6}))}
+function drawSky(t){sc.clearRect(0,0,innerWidth,innerHeight);
+  for(const s of stars){sc.globalAlpha=.4+.6*Math.abs(Math.sin(t/900+s.p));sc.fillStyle='#fff';sc.beginPath();sc.arc(s.x,s.y,s.r,0,7);sc.fill()}
+  if(!shoot&&Math.random()<.004)shoot={x:Math.random()*innerWidth,y:Math.random()*innerHeight*.4,l:0};
+  if(shoot){shoot.l+=12;const g=sc.createLinearGradient(shoot.x+shoot.l,shoot.y+shoot.l*.5,shoot.x+shoot.l-120,shoot.y+shoot.l*.5-60);
+    g.addColorStop(0,'rgba(255,255,255,.9)');g.addColorStop(1,'transparent');sc.globalAlpha=1;sc.strokeStyle=g;sc.lineWidth=2;
+    sc.beginPath();sc.moveTo(shoot.x+shoot.l,shoot.y+shoot.l*.5);sc.lineTo(shoot.x+shoot.l-120,shoot.y+shoot.l*.5-60);sc.stroke();
+    if(shoot.l>500)shoot=null}
+  requestAnimationFrame(drawSky)}
+
+/* Partikel: Herz-Explosionen & Feuerwerk */
+const fx=$('fx'),fc=fx.getContext('2d');let parts=[];
+const cols=['#ff4d7e','#ff9ab8','#ffd58a','#ffffff','#c2185b'];
+function explode(x,y,n,heart=true){for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,v=2+Math.random()*6;
+  parts.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:1,c:cols[i%cols.length],s:6+Math.random()*12,h:heart})}}
+function fireworks(){let k=0;const iv=setInterval(()=>{explode(Math.random()*innerWidth,Math.random()*innerHeight*.6,70,Math.random()<.5);
+  if(++k>25)clearInterval(iv)},350)}
+function drawFx(){fc.clearRect(0,0,innerWidth,innerHeight);
+  parts=parts.filter(p=>p.life>0);for(const p of parts){p.x+=p.vx;p.y+=p.vy;p.vy+=.08;p.vx*=.98;p.life-=.012;
+    fc.globalAlpha=Math.max(p.life,0);fc.fillStyle=p.c;
+    if(p.h){fc.font=p.s+'px serif';fc.fillText('♥',p.x,p.y)}else{fc.beginPath();fc.arc(p.x,p.y,2.2,0,7);fc.fill()}}
+  requestAnimationFrame(drawFx)}
+addEventListener('resize',size);size();requestAnimationFrame(drawSky);drawFx();
 </script>
 </body>
 </html>
